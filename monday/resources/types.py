@@ -1,4 +1,6 @@
 from enum import Enum
+from typing import Mapping
+from warnings import warn
 
 
 class DuplicateType(Enum):
@@ -50,6 +52,35 @@ class ColumnType(Enum):
     VOTE = "vote"  # Vote on an item e.g. pick a new feature or a favorite lunch place
     WEEK = "week"  # Select the week on which each item should be completed
     WORLD_CLOCK = "world_clock"  # Keep track of the time anywhere in the world
+
+    @classmethod
+    def is_defaults_have_recommended_keys(cls, defaults: Mapping[str, any] = None):
+        mirror_recommended_default_keys = (
+            "relation_column",
+            "displayed_linked_columns",
+        )
+
+        board_relation_recommended_default_keys = (
+            "boardId",
+            "boardIds",
+        )
+
+        if (cls == "mirror") & (mirror_recommended_default_keys not in defaults):
+            warn(
+                f"Defaults for mirror column type missing recommended keys: {[x for x in mirror_recommended_default_keys if x not in defaults]}. Column will appear blank.",
+                UserWarning,
+            )
+        elif (cls == "board_relation") & (
+            board_relation_recommended_default_keys not in defaults
+        ):
+            warn(
+                f"Defaults for board_relation column type missing recommended keys: {[x for x in board_relation_recommended_default_keys if x not in defaults]}. Items from the related board(s) will not be linkable.",
+                UserWarning,
+            )
+        else:
+            pass
+
+        return None
 
 
 class BoardKind(Enum):

@@ -192,6 +192,10 @@ def create_column(
             column_title,
         )
     else:
+        if isinstance(column_type, str):
+            column_type = ColumnType(column_type)
+            
+        column_type.is_defaults_have_recommended_keys(defaults)
         query = """mutation{
             create_column(board_id: %s, title: "%s", description: "%s", column_type: %s, defaults: %s) {
                 id
